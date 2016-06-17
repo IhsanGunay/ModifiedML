@@ -5,7 +5,7 @@ Created on Sep 16, 2015
 '''
 
 import numpy as np
-import glob
+from glob import glob
 from sklearn.feature_extraction.text import CountVectorizer
 from time import time
 import re
@@ -14,46 +14,42 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
     
     print("Loading the imdb reviews data")
     
-    train_neg_files = glob.glob(path + "\\train\\neg\\*.txt")
-    train_pos_files = glob.glob(path + "\\train\\pos\\*.txt")
+    train_neg_files = glob(path + r"/train/neg/*.txt")
+    train_pos_files = glob(path + r"/train/pos/*.txt")
     
     train_corpus = []
     
     y_train = []
     
     for tnf in train_neg_files:
-        f = open(tnf, 'r')
-        line = f.read()
-        train_corpus.append(line)
-        y_train.append(0)
-        f.close()
-    
+        with open(tnf, 'r', errors='replace') as f:
+            line = f.read()
+            train_corpus.append(line)
+            y_train.append(0)
+            
     for tpf in train_pos_files:
-        f = open(tpf, 'r')
-        line = f.read()
-        train_corpus.append(line)
-        y_train.append(1)
-        f.close()
-    
-    test_neg_files = glob.glob(path + "\\test\\neg\\*.txt")
-    test_pos_files = glob.glob(path + "\\test\\pos\\*.txt")
+        with open(tpf, 'r', errors='replace') as f:
+            line = f.read()
+            train_corpus.append(line)
+            y_train.append(1)
+            
+    test_neg_files = glob(path + r"/test/neg/*.txt")
+    test_pos_files = glob(path + r"/test/pos/*.txt")
     
     test_corpus = []
     
     y_test = []
     
     for tnf in test_neg_files:
-        f = open(tnf, 'r')
-        test_corpus.append(f.read())
-        y_test.append(0)
-        f.close()
-    
+        with open(tnf, 'r', errors='replace') as f:
+            test_corpus.append(f.read())
+            y_test.append(0)
+            
     for tpf in test_pos_files:
-        f = open(tpf, 'r')
-        test_corpus.append(f.read())
-        y_test.append(1)
-        f.close()
-        
+        with open(tpf, 'r', errors='replace') as f:
+            test_corpus.append(f.read())
+            y_test.append(1)
+                
     print("Data loaded.")
     
     print("Extracting features from the training dataset using a sparse vectorizer")
@@ -64,6 +60,7 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
     
     duration = time() - t0
     print("done in {}s".format(duration))
+    print(X_train.shape)
     print("n_samples: {}, n_features: {}".format(*X_train.shape))
     print()
         
@@ -74,7 +71,7 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
     
     duration = time() - t0
     print("done in {}s".format(duration))
-    print("n_samples: {}, n_features: {}".format(X_test.shape))
+    print("n_samples: {}, n_features: {}".format(*X_test.shape))
     print()
     
     y_train = np.array(y_train)
@@ -98,6 +95,9 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
         test_corpus_shuffled = [test_corpus[i] for i in indices]
          
     return X_train, y_train, X_test, y_test, train_corpus_shuffled, test_corpus_shuffled
+
+def ce_squared(T, probs):
+    return ((T*probs)**2).sum()/len(probs)
 
 class ColoredDoc(object):
     def __init__(self, doc, feature_names, coefs):
