@@ -4,7 +4,7 @@
 # In[1]:
 
 from classifiers import TransparentMultinomialNB
-from utils import ce_squared, load_imdb, ColoredWeightedDoc, TopInstances
+from utils import ce_squared, load_imdb, ColoredWeightedDoc, ClassifierArchive
 from sklearn.feature_extraction.text import CountVectorizer
 from IPython.display import display, display_html
 from time import time
@@ -83,15 +83,14 @@ ctrl_clf.fit(X_train, y_train)
 x = ctrl_clf.predict_proba(X_test) - best_clf.predict_proba(X_test)
 x = np.absolute(x[:,0])
 i = np.argsort(x)[0]
-with open('best.clf', 'wb') as f:
-    dump(best_clf,f)
 
-with open('ctrl.clf', 'wb') as f:
-    dump(ctrl_clf, f)
+arch = ClassifierArchive(ctrl_clf, best_clf, train_indices, y_modified, vect, 'MultinomialNB')
+
+with open('clf.arch', 'wb') as f:
+    dump(arch, f)
+
 # In[6]:
 
-#neg_evi, pos_evi = best_clf.predict_evidences(X_test)
-#i = TopInstances(neg_evi, pos_evi, best_clf.get_bias()).most_negatives()[0]
 display_html("<b>"+'Best Classifier'+"<b>", raw=True)
 display(ColoredWeightedDoc(test_corpus[i], feature_names, best_clf.get_weights()))
 display_html("<b>"+'Control Classifier'+"<b>", raw=True)

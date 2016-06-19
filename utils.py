@@ -100,11 +100,13 @@ def ce_squared(T, probs):
     return ((T*probs)**2).sum()/len(probs)
 
 class ColoredDoc(object):
+
     def __init__(self, doc, feature_names, coefs):
         self.doc = doc
         self.feature_names = feature_names
         self.coefs = coefs
         self.token_pattern = re.compile(r"(?u)\b\w\w+\b")
+
     def _repr_html_(self):
         html_rep = ""
         tokens = self.doc.split(" ")        
@@ -127,6 +129,7 @@ class ColoredDoc(object):
         return html_rep
 
 class ColoredWeightedDoc(object):
+
     def __init__(self, doc, feature_names, coefs, binary = False):
         self.doc = doc
         self.feature_names = feature_names
@@ -134,6 +137,7 @@ class ColoredWeightedDoc(object):
         self.binary = binary
         self.token_pattern = re.compile(r"(?u)\b\w\w+\b")
         self.abs_ranges = np.linspace(0, max([abs(coefs.min()), abs(coefs.max())]), 8)
+
     def _repr_html_(self):
         html_rep = ""
         tokens = self.doc.split(" ") 
@@ -175,6 +179,7 @@ class ColoredWeightedDoc(object):
         return html_rep
     
 class TopInstances():
+
     def __init__(self, neg_evis, pos_evis, intercept=0):
         self.neg_evis = neg_evis
         self.pos_evis = pos_evis
@@ -214,5 +219,30 @@ class TopInstances():
         conflicts = np.min([abs(self.neg_evis), abs(self.pos_evis)], axis=0)
         conflict_sorted = np.argsort(conflicts)
         return conflict_sorted[:k]
-    
-    
+
+class ClassifierArchive():
+
+    def __init__(self, ctrl_clf, best_clf, train_indices, modified_labels, vect,  clf_name):
+        self.clf_name = clf_name
+        slef.vect = vect
+        self.type = type(best_clf)
+        self.ctrl_clf = ctrl_clf
+        self.classifiers = [best_clf]
+        self.train_indices = [train_indices]
+        self.modified_labels = [modified_labels]
+        self.round_tags = [1]
+        assert type(best_clf) == type(ctrl_clf)
+
+    def __len__(self):
+        return len(self.classifiers)
+
+    def add_classifier(self, clf, train_indices, modified_labels, round_tag, vect):
+        self.classifiers.append(clf)
+        self.train_indices.append(train_indices)
+        self.modified_labels.append(modified_labels)
+        self.round_tags.append(round_tag)
+        assert self.vect == vect
+        assert self.type == type(clf)
+        assert len(self.classifiers) == len(self.train_indices)
+        assert len(self.classifiers) == len(self.round_tags)
+        assert len(self.classifiers) == len(self.modified_labels)
