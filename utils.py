@@ -224,7 +224,7 @@ class ClassifierArchive():
 
     def __init__(self, ctrl_clf, best_clf, train_indices, modified_labels, vect,  clf_name):
         self.clf_name = clf_name
-        slef.vect = vect
+        self.vect = vect
         self.type = type(best_clf)
         self.ctrl_clf = ctrl_clf
         self.classifiers = [best_clf]
@@ -235,6 +235,11 @@ class ClassifierArchive():
 
     def __len__(self):
         return len(self.classifiers)
+
+    def status(self):
+        print(self.clf_name, "\n")
+        print(self.round_tags, "\n")
+        print(self.vect)
 
     def add_classifier(self, clf, train_indices, modified_labels, round_tag, vect):
         self.classifiers.append(clf)
