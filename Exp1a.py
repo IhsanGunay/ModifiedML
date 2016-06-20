@@ -71,9 +71,9 @@ for i in range(25000):
         print("i = {}\tnew error = {:0.5f}".format(i, y0_error))
     
     else:
-        train_indices.pop(i)
+        train_indices.remove(i)
 
-clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag, vect)
+clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag)
 
 with open('clf.arch', 'wb') as f:
     dump(clf_arch, f)

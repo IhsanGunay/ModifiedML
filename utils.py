@@ -241,12 +241,11 @@ class ClassifierArchive():
         print(self.round_tags, "\n")
         print(self.vect)
 
-    def add_classifier(self, clf, train_indices, modified_labels, round_tag, vect):
+    def add_classifier(self, clf, train_indices, modified_labels, round_tag):
         self.classifiers.append(clf)
         self.train_indices.append(train_indices)
         self.modified_labels.append(modified_labels)
         self.round_tags.append(round_tag)
-        assert self.vect == vect
         assert self.type == type(clf)
         assert len(self.classifiers) == len(self.train_indices)
         assert len(self.classifiers) == len(self.round_tags)
