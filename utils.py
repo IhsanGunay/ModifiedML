@@ -61,8 +61,7 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
     duration = time() - t0
     print("done in {}s".format(duration))
     print(X_train.shape)
-    print("n_samples: {}, n_features: {}".format(*X_train.shape))
-    print()
+    print("n_samples: {}, n_features: {}".format(*X_train.shape), '\n')
         
     print("Extracting features from the test dataset using the same vectorizer")
     t0 = time()
@@ -71,8 +70,7 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
     
     duration = time() - t0
     print("done in {}s".format(duration))
-    print("n_samples: {}, n_features: {}".format(*X_test.shape))
-    print()
+    print("n_samples: {}, n_features: {}".format(*X_test.shape), '\n')
     
     y_train = np.array(y_train)
     y_test = np.array(y_test)
@@ -222,8 +220,7 @@ class TopInstances():
 
 class ClassifierArchive():
 
-    def __init__(self, ctrl_clf, best_clf, train_indices, modified_labels, vect,  clf_name):
-        self.clf_name = clf_name
+    def __init__(self, ctrl_clf, best_clf, train_indices, modified_labels, vect):
         self.vect = vect
         self.type = type(best_clf)
         self.ctrl_clf = ctrl_clf
@@ -236,8 +233,8 @@ class ClassifierArchive():
     def __len__(self):
         return len(self.classifiers)
 
-    def status(self):
-        print(self.clf_name, "\n")
+    def stats(self):
+        print(self.type, "\n")
         print(self.round_tags, "\n")
         print(self.vect)
 
@@ -247,6 +244,16 @@ class ClassifierArchive():
         self.modified_labels.append(modified_labels)
         self.round_tags.append(round_tag)
         assert self.type == type(clf)
+        assert len(self.classifiers) == len(self.train_indices)
+        assert len(self.classifiers) == len(self.round_tags)
+        assert len(self.classifiers) == len(self.modified_labels)
+
+    def rm_classifier(round_tag):
+        i = round_tags.index(round_tag)
+        classifiers.pop(i)
+        train_indices.pop(i)
+        modified_labels.pop(i)
+        round_tags.pop(i)
         assert len(self.classifiers) == len(self.train_indices)
         assert len(self.classifiers) == len(self.round_tags)
         assert len(self.classifiers) == len(self.modified_labels)

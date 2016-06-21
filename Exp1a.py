@@ -47,27 +47,26 @@ for i in range(25000):
 
     if i not in train_indices_set:
         train_indices.append(i)
+        train_indices.sort()
     
     clf = TransparentMultinomialNB()
     clf.fit(X_train[train_indices], y_modified[train_indices])        
     y_error = ce_squared(y_test_na, clf.predict_proba(X_test))
     
     y_modified[i] = 1 - y_modified[i]
-    clf = TransparentMultinomialNB()
-    clf.fit(X_train[train_indices], y_modified[train_indices])  
+    clf0 = TransparentMultinomialNB()
+    clf0.fit(X_train[train_indices], y_modified[train_indices])  
     y0_error = ce_squared(y_test_na, clf.predict_proba(X_test))
 
     if y_error < current_error and y_error < y0_error:            
         current_error = y_error
         y_modified[i] = 1 - y_modified[i]
-        clf = TransparentMultinomialNB()
-        clf.fit(X_train[train_indices], y_modified[train_indices]) 
         best_clf = clf
         print("i = {}\tnew error = {:0.5f}".format(i, y_error))
     
     elif y0_error < current_error and y0_error < y_error: # switch back the label
         current_error = y0_error
-        best_clf = clf
+        best_clf = clf0
         print("i = {}\tnew error = {:0.5f}".format(i, y0_error))
     
     else:

@@ -51,48 +51,32 @@ for i in range(10,25000):
     y_error = ce_squared(y_test_na, clf.predict_proba(X_test))
     
     y_modified[i] = 1 - y_modified[i]
-    clf = TransparentMultinomialNB()
-    clf.fit(X_train[train_indices], y_modified[train_indices])  
+    clf0 = TransparentMultinomialNB()
+    clf0.fit(X_train[train_indices], y_modified[train_indices])  
     y0_error = ce_squared(y_test_na, clf.predict_proba(X_test))
 
     if y_error < current_error and y_error < y0_error:            
         current_error = y_error
         y_modified[i] = 1 - y_modified[i]
-        clf = TransparentMultinomialNB()
-        clf.fit(X_train[train_indices], y_modified[train_indices]) 
         best_clf = clf
         print("i = {}\tnew error = {:0.5f}".format(i, y_error))
     
     elif y0_error < current_error and y0_error < y_error: # switch back the label
         current_error = y0_error
-        best_clf = clf
+        best_clf = clf0
         print("i = {}\tnew error = {:0.5f}".format(i, y0_error))
     
     else:
         train_indices.pop()
-
 
 # In[4]:
 
 ctrl_clf = TransparentMultinomialNB()
 ctrl_clf.fit(X_train, y_train)
 
-
 # In[5]:
 
-x = ctrl_clf.predict_proba(X_test) - best_clf.predict_proba(X_test)
-x = np.absolute(x[:,0])
-i = np.argsort(x)[0]
-
-arch = ClassifierArchive(ctrl_clf, best_clf, train_indices, y_modified, vect, 'MultinomialNB')
+arch = ClassifierArchive(ctrl_clf, best_clf, train_indices, y_modified, vect)
 
 with open('clf.arch', 'wb') as f:
     dump(arch, f)
-
-# In[6]:
-
-display_html("<b>"+'Best Classifier'+"<b>", raw=True)
-display(ColoredWeightedDoc(test_corpus[i], feature_names, best_clf.get_weights()))
-display_html("<b>"+'Control Classifier'+"<b>", raw=True)
-display(ColoredWeightedDoc(test_corpus[i], feature_names, ctrl_clf.get_weights()))
-
