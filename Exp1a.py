@@ -44,8 +44,42 @@ round_tag = clf_arch.round_tags[-1] + 1
 current_error = ce_squared(y_test_na, best_clf.predict_proba(X_test))
 
 for i in range(25000):
+	
+	if i in train_indices_set:
+		# consider flipping or removing
+		y_modified[i] = 1 - y_modified[i]
+		clf_flipped = Transparen...
+		clf_flipped.fit...
+		flipped_error = 
+
+		remove_train_indices = list(train_indices)
+		remove_train_indices.remove(i)
+		clf_remove = Tran
+		clf_remove.fit(X_train[remove_train_indices],
+		remove_error = 
+
+		if flipped_error < current_error and flipped_error < remove_error:
+			best_clf = clf_flipped
+			current_error = flipped_error
+		elif remove_error < current_error and remove_error <= flipped_error:
+			best_clf = clf_remove
+			train_indices = remove_train_indices
+		else:
+			y_modified[i] = 1 - y_modified[i]
+	else:
+		# consider adding with either 0 or 1
+		add_train_indices = list(train_indices)
+		add_train_indices.append(i)
+
+
+		
+
+for i in range(25000):
+
+    added_now = False
 
     if i not in train_indices_set:
+	added_now = True
         train_indices.append(i)
         train_indices.sort()
     
@@ -69,7 +103,7 @@ for i in range(25000):
         best_clf = clf0
         print("i = {}\tnew error = {:0.5f}".format(i, y0_error))
     
-    else:
+    elif added_now:
         train_indices.remove(i)
 
 clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag)
