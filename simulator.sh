@@ -1,3 +1,5 @@
 #! /bin/bash
-python3 Exp1.py
-python3 Exp1a.py
+
+for i in `seq 1 9`; do
+	python3 Exp1a.py
+done
