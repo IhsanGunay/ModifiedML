@@ -53,9 +53,9 @@ for i in range(10,25000):
     y_modified[i] = 1 - y_modified[i]
     clf0 = TransparentMultinomialNB()
     clf0.fit(X_train[train_indices], y_modified[train_indices])  
-    y0_error = ce_squared(y_test_na, clf.predict_proba(X_test))
+    y0_error = ce_squared(y_test_na, clf0.predict_proba(X_test))
 
-    if y_error < current_error and y_error < y0_error:            
+    if y_error < current_error and y_error <= y0_error:            
         current_error = y_error
         y_modified[i] = 1 - y_modified[i]
         best_clf = clf
