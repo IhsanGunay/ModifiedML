@@ -62,11 +62,13 @@ for i in range(25000):
         if flipped_error < current_error and flipped_error < remove_error:
             best_clf = clf_flipped
             current_error = flipped_error
+            print("i = {}\tnew error = {:0.5f}".format(i, current_error))
 
         elif remove_error < current_error and remove_error <= flipped_error:
             best_clf = clf_remove
             train_indices = remove_train_indices
             current_error = remove_error
+            print("i = {}\tnew error = {:0.5f}".format(i, current_error))
 
         else:
             y_modified[i] = 1 - y_modified[i]
@@ -89,12 +91,12 @@ for i in range(25000):
             current_error = y_error
             y_modified[i] = 1 - y_modified[i]
             best_clf = clf
-            print("i = {}\tnew error = {:0.5f}".format(i, y_error))
+            print("i = {}\tnew error = {:0.5f}".format(i, current_error))
         
         elif y0_error < current_error and y0_error < y_error:
             current_error = y0_error
             best_clf = clf0
-            print("i = {}\tnew error = {:0.5f}".format(i, y0_error))
+            print("i = {}\tnew error = {:0.5f}".format(i, current_error))
 
         else:
             train_indices.pop()
