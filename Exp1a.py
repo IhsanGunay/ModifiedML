@@ -38,7 +38,7 @@ with open('clf.arch', 'rb') as f:
 best_clf = clf_arch.classifiers[-1]
 train_indices_set = set(clf_arch.train_indices[-1])
 train_indices = clf_arch.train_indices[-1]
-y_modified = np.copy(clf_arch.modified_labels[-1])
+y_modified = clf_arch.modified_labels[-1]
 round_tag = clf_arch.round_tags[-1] + 1
 
 current_error = ce_squared(y_test_na, best_clf.predict_proba(X_test))
@@ -100,6 +100,9 @@ for i in range(25000):
 
         else:
             train_indices.pop()
+
+with open('clf.arch', 'rb') as f:
+    clf_arch = load(f)
 
 clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag)
 
