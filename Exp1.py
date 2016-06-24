@@ -4,9 +4,8 @@
 # In[1]:
 
 from classifiers import TransparentMultinomialNB
-from utils import ce_squared, load_imdb, ColoredWeightedDoc, ClassifierArchive
+from utils import ce_squared, load_imdb, ClassifierArchive
 from sklearn.feature_extraction.text import CountVectorizer
-from IPython.display import display, display_html
 from time import time
 from pickle import dump
 import numpy as np
