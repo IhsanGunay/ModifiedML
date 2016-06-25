@@ -1,7 +1,7 @@
 #! /bin/bash
 
-python3 Exp2.py
+python3 Exp3.py
 
-for i in `seq 1 10`; do
-	python3 Exp2a.py
+for i in `seq 1 9`; do
+	python3 Exp3a.py
 done
