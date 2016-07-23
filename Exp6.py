@@ -10,7 +10,6 @@ import multiprocessing as mp
 # Functions
 
 def produce_modifications(in_q, out_q, finished):
-    process_name = mp.current_process().name
     while not finished.is_set():
         if not in_q.empty():
             y_train, train_indices, target_indices, current_error = in_q.get()   
@@ -28,7 +27,6 @@ def produce_modifications(in_q, out_q, finished):
             sleep(0.01)
 
 def test_modification(in_q, out_q, X_train, X_val, y_val_na, finished):
-    process_name = mp.current_process().name
     while not finished.is_set():
         if not in_q.empty():
             y_train, train_indices, current_error = in_q.get()
