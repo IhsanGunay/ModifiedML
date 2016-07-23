@@ -115,9 +115,15 @@ y_train = np.copy(y_train[:split])
 y_val_na = y_val[:, np.newaxis]
 y_val_na = np.append(y_val_na, 1-y_val_na, axis=1)
 
-train_indices = list(range(X_train.shape[0]))
+with open('clf6.arch', 'rb') as f:
+    arch = load(f)
 
-best_error = ctrl_error 
+best_clf = clf_arch.classifiers[-1]
+train_indices = clf_arch.train_indices[-1]
+y_modified = clf_arch.modified_labels[-1]
+round_tag = clf_arch.round_tags[-1] + 1
+
+est_error = float(ctrl_error) 
 best_y_train = np.copy(y_train)
 best_train_indices = list(train_indices)
 
