@@ -43,14 +43,10 @@ def test_modification(in_q, out_q, X_train, X_val, y_val_na, finished):
         else:
             sleep(0.01)
 
-def select_best(in_q, out_q, X_train, finished):
-    global best_error
-    global best_y_train
-    global best_train_indices
-    
-    experiment_length = 2 * X_train.shape[0]
+def select_best(in_q, out_q, X_train, finished, best_error, best_y_train, best_train_indices):
+    experiment_length = 2 * X_train.shape[0] # One for changing, one for omitting
     batch_size = 10
-    round_length = 2 * batch_size # One for changing, one for omitting
+    round_length = 2 * batch_size
     start_ind = 0
     end_ind = start_ind + batch_size
     i = 0
@@ -116,17 +112,17 @@ y_val_na = y_val[:, np.newaxis]
 y_val_na = np.append(y_val_na, 1-y_val_na, axis=1)
 
 with open('clf6.arch', 'rb') as f:
-    arch = load(f)
+    clf_arch = load(f)
 
 best_clf = clf_arch.classifiers[-1]
+previous_error = ce_squared(y_test_na, best_clf.predict_proba(X_test))
 train_indices = clf_arch.train_indices[-1]
 y_modified = clf_arch.modified_labels[-1]
 round_tag = clf_arch.round_tags[-1] + 1
 
-est_error = float(ctrl_error) 
-best_y_train = np.copy(y_train)
-best_train_indices = list(train_indices)
-
+best_error = mp.Value('f', previous_error)
+best_y_train = mp.Array('I', y_modified)
+best_train_indices = mp.Array('I', train_indices)
 production_q = mp.Queue()
 testing_q = mp.Queue()
 selection_q = mp.Queue()
@@ -139,7 +135,7 @@ for _ in range(20):
     task = mp.Process(target=test_modification, args=(testing_q, selection_q, X_train, X_val, y_val_na, finished))
     testing_tasks.append(task)
     
-selection_task = mp.Process(target=select_best, args=(selection_q, production_q, X_train, finished))
+selection_task = mp.Process(target=select_best, args=(selection_q, production_q, X_train, finished, best_error, best_y_train, best_train_indices))
 
 duration = time() - t0
 print("Loading the experiment took {:0.2f}s.".format(duration), '\n')
@@ -160,10 +156,14 @@ for task in testing_tasks:
     
 best_clf = Classifier()
 best_clf.fit(X_train[best_train_indices], best_y_train[best_train_indices])
+test_error = ce_squared(y_test_na, best_clf.predict_proba(X_test))
 
-arch = ClassifierArchive(ctrl_clf, best_clf, best_train_indices, best_y_train, vect)
+with open('clf6.arch', 'rb') as f:
+    clf_arch = load(f)
+
+clf_arch.add_classifier(best_clf, best_train_indices, best_y_train, round_tag)
 
 with open('clf6.arch','wb') as f:
     dump(arch, f)
     
-print('Experiment is done, best error is {:0.4f}, ctrl error is {:0.4f}'.format(best_error, ctrl_error)) 
+print('Experiment is done, test error is {:0.4f}, ctrl error is {:0.4f}'.format(test_error, ctrl_error)) 
