@@ -41,7 +41,7 @@ def test_modification(in_q, out_q, X_train, X_val, y_val_na, finished):
         else:
             sleep(0.01)
 
-def select_best(in_q, out_q, X_train, finished, best_error, best_y_train, best_train_indices):
+def select_best(in_q, out_q, pipe, X_train, finished, best_error, best_y_train, best_train_indices):
     experiment_length = 2 * X_train.shape[0] # One for changing, one for omitting
     batch_size = 10
     round_length = 2 * batch_size
@@ -66,6 +66,9 @@ def select_best(in_q, out_q, X_train, finished, best_error, best_y_train, best_t
             i += 1
             j += 1
             if j == experiment_length:
+                result = best_error, best_y_train, best_train_indices
+                pipe.send(result)
+                pipe.close()
                 finished.set()
                 print('Round: {}\tCurrent Error: {}'.format(j/round_length, best_error))
                 print('Experiment is finishing up.')
@@ -111,13 +114,11 @@ y_val_na = np.append(y_val_na, 1-y_val_na, axis=1)
 
 train_indices = list(range(X_train.shape[0]))
 
-best_error = mp.Value('f', ctrl_error)
-best_y_train = mp.Array('I', y_train)
-best_train_indices = mp.Array('I', train_indices)
 production_q = mp.Queue()
 testing_q = mp.Queue()
 selection_q = mp.Queue()
 finished = mp.Event()
+pipe_end, pipe_begin = mp.Pipe() 
 
 producer_task = mp.Process(target=produce_modifications, args=(production_q, testing_q, finished))
 
@@ -126,7 +127,7 @@ for _ in range(20):
     task = mp.Process(target=test_modification, args=(testing_q, selection_q, X_train, X_val, y_val_na, finished))
     testing_tasks.append(task)
     
-selection_task = mp.Process(target=select_best, args=(selection_q, production_q, X_train, finished, best_error, best_y_train, best_train_indices))
+selection_task = mp.Process(target=select_best, args=(selection_q, production_q, pipe_begin, X_train, finished, ctrl_error, y_train, train_indices))
 
 duration = time() - t0
 print("Loading the experiment took {:0.2f}s.".format(duration), '\n')
@@ -139,6 +140,8 @@ selection_task.start()
 producer_task.start()
 for task in testing_tasks:
     task.start()
+
+best_error, best_y_train, best_train_indices = pipe_end.recv()
 
 selection_task.join()
 producer_task.join()
