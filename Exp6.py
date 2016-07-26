@@ -24,7 +24,7 @@ def produce_modifications(in_q, out_q, finished):
                 test = y_train, mod1, current_error
                 out_q.put(test)
         else:
-            sleep(0.01)
+            sleep(0.001)
 
 def test_modification(in_q, out_q, X_train, X_val, y_val_na, finished):
     while not finished.is_set():
@@ -39,7 +39,7 @@ def test_modification(in_q, out_q, X_train, X_val, y_val_na, finished):
                 result = False, current_error, y_train, train_indices
             out_q.put(result)
         else:
-            sleep(0.01)
+            sleep(0.001)
 
 def select_best(in_q, out_q, pipe, X_train, finished, best_error, best_y_train, best_train_indices):
     experiment_length = 2 * X_train.shape[0] # One for changing, one for omitting
@@ -82,7 +82,7 @@ def select_best(in_q, out_q, pipe, X_train, finished, best_error, best_y_train, 
                 print('Round: {}\tCurrent Error: {}'.format(j/round_length, best_error))
                 i = 0
         else:
-            sleep(0.01)
+            sleep(0.001)
 
 
 # Loading
@@ -100,6 +100,8 @@ clf = Classifier()
 clf.fit(X_train, y_train)
 ctrl_clf = clf
 ctrl_error = ce_squared(y_test_na, clf.predict_proba(X_test))
+ctrl_acc = clf.score(X_test y_test)
+
 # Split the train dataset in 2 for validation
 split = int(X_train.shape[0] / 2)
 
@@ -150,11 +152,11 @@ for task in testing_tasks:
     
 best_clf = Classifier()
 best_clf.fit(X_train[best_train_indices], best_y_train[best_train_indices])
-test_error = ce_squared(y_test_na, best_clf.predict_proba(X_test))
+test_acc = best_clf.score(X_test, y_test)
 
 arch = ClassifierArchive(ctrl_clf, best_clf, best_train_indices, best_y_train, vect)
 
 with open('clf6.arch','wb') as f:
     dump(arch, f)
     
-print('Experiment is done, test error is {:0.4f}, ctrl error is {:0.4f}'.format(test_error, ctrl_error)) 
+print('Experiment is done, test acc is {:0.4f}, ctrl acc is {:0.4f}'.format(test_acc, ctrl_acc)) 
