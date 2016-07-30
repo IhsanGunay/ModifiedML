@@ -79,7 +79,7 @@ y_train = np.copy(y_train[:split])
 y_val_na = y_val[:, np.newaxis]
 y_val_na = np.append(y_val_na, 1-y_val_na, axis=1)
 
-train_indices = list(range(X_train.shape[0]))
+
 
 duration = time() - t0
 print("Loading the dataset took {:0.2f}s.".format(duration), '\n')
@@ -89,9 +89,11 @@ start_ind = 0
 batch_size = 10
 end_ind = start_ind + batch_size
 
-best_error = ce_squared(y_val_na, ctrl_clf.predict_proba(X_val))
+clf = Classifier()
+clf.fit(X_train, y_train)
+best_error = ce_squared(y_val_na, clf.predict_proba(X_val))
 best_y_train = y_train
-best_train_indices = train_indices
+best_train_indices = list(range(X_train.shape[0]))
 
 while end_ind <= X_train.shape[0]:
     target_indices = range(start_ind, end_ind)
