@@ -2,37 +2,34 @@ from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer as Vectorizer
 from classifiers import TransparentMultinomialNB as Classifier
 from utils import ce_squared, load_imdb, ClassifierArchive
+from itertools import starmap, repeat
 from time import time
 import numpy as np
 import pickle
 
 # Functions
 def produce_modifications(y_train, train_indices, target_indices):
-    mods = []
+    yield y_train, train_indices
+
     for i in target_indices:
+
         if i in train_indices:
             mod0 = np.copy(y_train)
             mod0[i] = 1 - mod0[i]
-            test = mod0, train_indices
-            mods.append(test)
+            yield mod0, train_indices
 
             mod1 = list(train_indices)
             mod1.remove(i)
-            test = y_train, mod1
-            mods.append(test)
+            yield y_train, mod1
 
         else:
             mod0 = list(train_indices)
             mod0.append(i)
-            test = y_train, mod0
-            mods.append(test)
+            yield y_train, mod0
 
             mod1 = np.copy(y_train)
             mod1[i] = 1 - mod1[i]
-            test = mod1, mod0
-            mods.append(test)
-            
-    return mods
+            yield mod1, mod0
 
 def test_modification(y_train, train_indices):
     global X_train
@@ -46,10 +43,7 @@ def test_modification(y_train, train_indices):
     clf.fit(X_train[train_indices],y_train[train_indices])
     new_error = ce_squared(y_val_na, clf.predict_proba(X_val))
     
-    if new_error < best_error:
-        return new_error, y_train, train_indices
-    else:
-        return best_error, best_y_train, best_train_indices
+    return new_error, y_train, train_indices
 
 # Loading
 t0 = time()
@@ -92,13 +86,13 @@ end_ind = start_ind + batch_size
 clf = Classifier()
 clf.fit(X_train, y_train)
 best_error = ce_squared(y_val_na, clf.predict_proba(X_val))
-best_y_train = y_train
+best_y_train = np.copy(y_train)
 best_train_indices = list(range(X_train.shape[0]))
 
 while end_ind <= X_train.shape[0]:
     target_indices = range(start_ind, end_ind)
     mods = produce_modifications(best_y_train, best_train_indices, target_indices)
-    test_results = map(lambda x: test_modification(*x), mods)
+    test_results = starmap(test_modification, mods)
     best_error, best_y_train, best_train_indices = min(test_results, key=lambda x: x[0])
    
     print('Training round 0,\tProcessed: {:5d} samples,\tcurrent error is {:0.4f}'.format(end_ind, best_error))
@@ -108,6 +102,7 @@ while end_ind <= X_train.shape[0]:
 best_clf = Classifier()
 best_clf.fit(X_train[best_train_indices], best_y_train[best_train_indices])
 test_acc = best_clf.score(X_test, y_test)
+print('Training round 0,\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(test_acc, ctrl_acc))
 
 clf_arch = ClassifierArchive(ctrl_clf, best_clf, best_train_indices, best_y_train, vect)
 
@@ -121,7 +116,7 @@ for i in range(1,11):
     while end_ind <= X_train.shape[0]:
         target_indices = range(start_ind, end_ind)
         mods = produce_modifications(best_y_train, best_train_indices, target_indices)
-        test_results = map(lambda x: test_modification(*x), mods)
+        test_results = starmap(test_modification, mods)
         best_error, best_y_train, best_train_indices = min(test_results, key=lambda x: x[0])
         
         print('Training round {},\tProcessed: {:5d} samples,\tcurrent error is {:0.4f}'.format(i, end_ind, best_error))
@@ -131,6 +126,7 @@ for i in range(1,11):
     best_clf = Classifier()
     best_clf.fit(X_train[best_train_indices], best_y_train[best_train_indices])
     test_acc = best_clf.score(X_test, y_test)
+    print('Training round {},\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(i, test_acc, ctrl_acc))
 
     with open('clf8.arch','rb') as f:
         clf_arch = pickle.load(f)
@@ -140,4 +136,4 @@ for i in range(1,11):
     with open('clf8.arch','wb') as f:
         pickle.dump(clf_arch, f)
     
-print('Experiment is done, test acc is {:0.4f}, ctrl acc is {:0.4f}'.format(test_acc, ctrl_acc))
+print('Experiment is done.')
