@@ -7,15 +7,15 @@ Feature extraction technique is CountVectorizer(analyzer='word', binary=False, d
         ngram_range=(1, 1), preprocessor=None, stop_words=None,
         strip_accents=None, token_pattern='(?u)\\b\\w\\w+\\b',
         tokenizer=None, vocabulary=None).
-done in 4.607913494110107s
+done in 4.596318483352661s
 (25000, 27272)
 n_samples: 25000, n_features: 27272 
 
 Extracting features from the test dataset using the same vectorizer
-done in 4.075307130813599s
+done in 4.120144367218018s
 n_samples: 25000, n_features: 27272 
 
-Loading the dataset took 10.79s. 
+Loading the dataset took 11.14s. 
 
 Training round 0,	Processed:    10 samples,	current error is 0.1431
 Training round 0,	Processed:    20 samples,	current error is 0.1430
@@ -1267,6 +1267,7 @@ Training round 0,	Processed: 12470 samples,	current error is 0.0677
 Training round 0,	Processed: 12480 samples,	current error is 0.0676
 Training round 0,	Processed: 12490 samples,	current error is 0.0676
 Training round 0,	Processed: 12500 samples,	current error is 0.0676
+Training round 0,	Test accuracy is 0.858,	Cotrol accuracy is 0.816
 Training round 1,	Processed:    10 samples,	current error is 0.0676
 Training round 1,	Processed:    20 samples,	current error is 0.0675
 Training round 1,	Processed:    30 samples,	current error is 0.0675
@@ -2517,6 +2518,7 @@ Training round 1,	Processed: 12470 samples,	current error is 0.0425
 Training round 1,	Processed: 12480 samples,	current error is 0.0425
 Training round 1,	Processed: 12490 samples,	current error is 0.0425
 Training round 1,	Processed: 12500 samples,	current error is 0.0425
+Training round 1,	Test accuracy is 0.852,	Cotrol accuracy is 0.816
 Training round 2,	Processed:    10 samples,	current error is 0.0425
 Training round 2,	Processed:    20 samples,	current error is 0.0425
 Training round 2,	Processed:    30 samples,	current error is 0.0425
@@ -3767,6 +3769,7 @@ Training round 2,	Processed: 12470 samples,	current error is 0.0318
 Training round 2,	Processed: 12480 samples,	current error is 0.0318
 Training round 2,	Processed: 12490 samples,	current error is 0.0318
 Training round 2,	Processed: 12500 samples,	current error is 0.0318
+Training round 2,	Test accuracy is 0.848,	Cotrol accuracy is 0.816
 Training round 3,	Processed:    10 samples,	current error is 0.0318
 Training round 3,	Processed:    20 samples,	current error is 0.0318
 Training round 3,	Processed:    30 samples,	current error is 0.0318
@@ -5017,6 +5020,7 @@ Training round 3,	Processed: 12470 samples,	current error is 0.0256
 Training round 3,	Processed: 12480 samples,	current error is 0.0256
 Training round 3,	Processed: 12490 samples,	current error is 0.0256
 Training round 3,	Processed: 12500 samples,	current error is 0.0256
+Training round 3,	Test accuracy is 0.844,	Cotrol accuracy is 0.816
 Training round 4,	Processed:    10 samples,	current error is 0.0256
 Training round 4,	Processed:    20 samples,	current error is 0.0256
 Training round 4,	Processed:    30 samples,	current error is 0.0256
@@ -6267,6 +6271,7 @@ Training round 4,	Processed: 12470 samples,	current error is 0.0221
 Training round 4,	Processed: 12480 samples,	current error is 0.0221
 Training round 4,	Processed: 12490 samples,	current error is 0.0221
 Training round 4,	Processed: 12500 samples,	current error is 0.0221
+Training round 4,	Test accuracy is 0.842,	Cotrol accuracy is 0.816
 Training round 5,	Processed:    10 samples,	current error is 0.0221
 Training round 5,	Processed:    20 samples,	current error is 0.0221
 Training round 5,	Processed:    30 samples,	current error is 0.0221
@@ -7517,6 +7522,7 @@ Training round 5,	Processed: 12470 samples,	current error is 0.0194
 Training round 5,	Processed: 12480 samples,	current error is 0.0194
 Training round 5,	Processed: 12490 samples,	current error is 0.0194
 Training round 5,	Processed: 12500 samples,	current error is 0.0194
+Training round 5,	Test accuracy is 0.842,	Cotrol accuracy is 0.816
 Training round 6,	Processed:    10 samples,	current error is 0.0194
 Training round 6,	Processed:    20 samples,	current error is 0.0194
 Training round 6,	Processed:    30 samples,	current error is 0.0194
@@ -8767,6 +8773,7 @@ Training round 6,	Processed: 12470 samples,	current error is 0.0174
 Training round 6,	Processed: 12480 samples,	current error is 0.0174
 Training round 6,	Processed: 12490 samples,	current error is 0.0174
 Training round 6,	Processed: 12500 samples,	current error is 0.0174
+Training round 6,	Test accuracy is 0.839,	Cotrol accuracy is 0.816
 Training round 7,	Processed:    10 samples,	current error is 0.0174
 Training round 7,	Processed:    20 samples,	current error is 0.0174
 Training round 7,	Processed:    30 samples,	current error is 0.0174
@@ -10017,6 +10024,7 @@ Training round 7,	Processed: 12470 samples,	current error is 0.0160
 Training round 7,	Processed: 12480 samples,	current error is 0.0160
 Training round 7,	Processed: 12490 samples,	current error is 0.0160
 Training round 7,	Processed: 12500 samples,	current error is 0.0160
+Training round 7,	Test accuracy is 0.837,	Cotrol accuracy is 0.816
 Training round 8,	Processed:    10 samples,	current error is 0.0160
 Training round 8,	Processed:    20 samples,	current error is 0.0160
 Training round 8,	Processed:    30 samples,	current error is 0.0160
@@ -11267,6 +11275,7 @@ Training round 8,	Processed: 12470 samples,	current error is 0.0151
 Training round 8,	Processed: 12480 samples,	current error is 0.0151
 Training round 8,	Processed: 12490 samples,	current error is 0.0151
 Training round 8,	Processed: 12500 samples,	current error is 0.0151
+Training round 8,	Test accuracy is 0.836,	Cotrol accuracy is 0.816
 Training round 9,	Processed:    10 samples,	current error is 0.0151
 Training round 9,	Processed:    20 samples,	current error is 0.0151
 Training round 9,	Processed:    30 samples,	current error is 0.0151
@@ -12517,6 +12526,7 @@ Training round 9,	Processed: 12470 samples,	current error is 0.0143
 Training round 9,	Processed: 12480 samples,	current error is 0.0143
 Training round 9,	Processed: 12490 samples,	current error is 0.0143
 Training round 9,	Processed: 12500 samples,	current error is 0.0143
+Training round 9,	Test accuracy is 0.837,	Cotrol accuracy is 0.816
 Training round 10,	Processed:    10 samples,	current error is 0.0143
 Training round 10,	Processed:    20 samples,	current error is 0.0143
 Training round 10,	Processed:    30 samples,	current error is 0.0143
@@ -13767,4 +13777,5 @@ Training round 10,	Processed: 12470 samples,	current error is 0.0138
 Training round 10,	Processed: 12480 samples,	current error is 0.0138
 Training round 10,	Processed: 12490 samples,	current error is 0.0138
 Training round 10,	Processed: 12500 samples,	current error is 0.0138
-Experiment is done, test acc is 0.8346, ctrl acc is 0.8157
+Training round 10,	Test accuracy is 0.835,	Cotrol accuracy is 0.816
+Experiment is done.
