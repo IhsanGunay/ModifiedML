@@ -108,9 +108,9 @@ with ProcessPoolExecutor() as executor:
         while end_ind <= X_train.shape[0]:
             target_indices = range(start_ind, end_ind)
             mods = produce_modifications(X_train, best_y_train, best_train_indices, target_indices, X_val, y_val_na)
-            test_results = executor.map(test_modification, mods)
-            current_stats = best_error, best_y_train, best_train_indices
-            best_error, best_y_train, best_train_indices = min(chain(test_results, current_stats), key=lambda x: x[0])
+            test_results = list(executor.map(test_modification, mods))
+            test_results.append((best_error, best_y_train, best_train_indices))
+            best_error, best_y_train, best_train_indices = min(test_results, key=lambda x: x[0])
             
             print('Training round: {},\tProcessed: {:5d} samples,\tcurrent error is {:0.4f}'.format(i, end_ind, best_error))
             start_ind += batch_size
