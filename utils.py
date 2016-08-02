@@ -58,11 +58,11 @@ def load_imdb(path, split_half=True, shuffle=True, random_state=42, vectorizer=C
 
     split = int(len(y_train)/2) 
 
-    y_train = y_train[:split]
     y_val = y_train[split:]
+    y_train = y_train[:split]
     
     val_corpus = train_corpus[split:]
-    train_corpus = train_corpus[split:]
+    train_corpus = train_corpus[:split]
 
     X_train = vectorizer.fit_transform(train_corpus)
     X_val = vectorizer.transform(val_corpus)
@@ -96,6 +96,7 @@ def load_imdb(path, split_half=True, shuffle=True, random_state=42, vectorizer=C
         
         np.random.seed(random_state)
         indices = np.random.permutation(len(y_val))        
+        print(indices)
         
         X_val = X_val.tocsr()
         X_val = X_val[indices]
