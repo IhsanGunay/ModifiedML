@@ -56,61 +56,41 @@ def load_imdb(path, split_half=True, shuffle=True, random_state=42, vectorizer=C
     print("Feature extraction technique is {}.".format(vectorizer))
     t0 = time()
 
-    split = int(len(y_train)/2) 
-
-    y_val = y_train[split:]
-    y_train = y_train[:split]
-    
-    val_corpus = train_corpus[split:]
-    train_corpus = train_corpus[:split]
-
-    X_train = vectorizer.fit_transform(train_corpus)
-    X_val = vectorizer.transform(val_corpus)
-    
-    duration = time() - t0
-    print("done in {}s".format(duration))
-    print(X_train.shape)
-    print("n_samples: {}, n_features: {}".format(*X_train.shape), '\n')
-        
-    print("Extracting features from the test dataset using the same vectorizer")
-    t0 = time()
-        
-    X_test = vectorizer.transform(test_corpus)
-    
-    duration = time() - t0
-    print("done in {}s".format(duration))
-    print("n_samples: {}, n_features: {}".format(*X_test.shape), '\n')
-    
     y_train = np.array(y_train)
-    y_val = np.array(y_val)
     y_test = np.array(y_test)
     
     if shuffle:
         np.random.seed(random_state)
         indices = np.random.permutation(len(y_train))        
-        
-        X_train = X_train.tocsr()
-        X_train = X_train[indices]
         y_train = y_train[indices]
         train_corpus_shuffled = [train_corpus[i] for i in indices]
         
         np.random.seed(random_state)
-        indices = np.random.permutation(len(y_val))        
-        print(indices)
-        
-        X_val = X_val.tocsr()
-        X_val = X_val[indices]
-        y_val = y_val[indices]
-        val_corpus_shuffled = [val_corpus[i] for i in indices]
-        
-        np.random.seed(random_state)
-        indices = np.random.permutation(len(y_test))
-        
-        X_test = X_test.tocsr()
-        X_test = X_test[indices]
+        indices = np.random.permutation(len(y_test))        
         y_test = y_test[indices]
         test_corpus_shuffled = [test_corpus[i] for i in indices]
-         
+        
+    if split_half:
+        split = int(len(y_train)/2) 
+
+        y_val = np.copy(y_train[split:])
+        y_train = np.copy(y_train[:split])
+    
+        val_corpus = train_corpus[split:]
+        train_corpus = train_corpus[:split]
+
+        X_train = vectorizer.fit_transform(train_corpus)
+        X_val = vectorizer.transform(val_corpus)
+        X_test = vectorizer.transform(test_corpus)
+        
+        X_train = X_train.tocsr()
+        X_test = X_test.tocsr()
+        X_val = X_val.tocsr()
+    
+    duration = time() - t0
+    print("done in {}s".format(duration))
+    print("n_samples: {}, n_features: {}".format(*X_train.shape), '\n')
+    
     return X_train, y_train, X_val, y_val, X_test, y_test, train_corpus_shuffled, val_corpus_shuffled, test_corpus_shuffled
 
 def ce_squared(T, probs):
