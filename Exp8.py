@@ -6,7 +6,7 @@ from utils import ce_squared, load_imdb, ClassifierArchive
 from itertools import starmap, repeat, chain
 from time import time
 import numpy as np
-import pickle
+import cPickle as pickle
 
 # Functions
 def produce_modifications(X_train, y_train, train_indices, target_indices, X_val, y_val_na):
