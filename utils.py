@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from time import time
 import re
 
-def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(min_df=5, max_df=1.0, binary=True)):
+def load_imdb(path, split_half=True, shuffle=True, random_state=42, vectorizer=CountVectorizer(min_df=5, max_df=1.0, binary=True)):
     
     print("Loading the imdb reviews data")
     
@@ -55,8 +55,17 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
     print("Extracting features from the training dataset using a sparse vectorizer")
     print("Feature extraction technique is {}.".format(vectorizer))
     t0 = time()
+
+    split = int(len(y_train)/2) 
+
+    y_train = y_train[:split]
+    y_val = y_train[split:]
     
+    val_corpus = train_corpus[split:]
+    train_corpus = train_corpus[split:]
+
     X_train = vectorizer.fit_transform(train_corpus)
+    X_val = vectorizer.transform(val_corpus)
     
     duration = time() - t0
     print("done in {}s".format(duration))
@@ -73,6 +82,7 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
     print("n_samples: {}, n_features: {}".format(*X_test.shape), '\n')
     
     y_train = np.array(y_train)
+    y_val = np.array(y_val)
     y_test = np.array(y_test)
     
     if shuffle:
@@ -84,7 +94,15 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
         y_train = y_train[indices]
         train_corpus_shuffled = [train_corpus[i] for i in indices]
         
+        np.random.seed(random_state)
+        indices = np.random.permutation(len(y_val))        
         
+        X_val = X_val.tocsr()
+        X_val = X_val[indices]
+        y_val = y_val[indices]
+        val_corpus_shuffled = [val_corpus[i] for i in indices]
+        
+        np.random.seed(random_state)
         indices = np.random.permutation(len(y_test))
         
         X_test = X_test.tocsr()
@@ -92,7 +110,7 @@ def load_imdb(path, shuffle=True, random_state=42, vectorizer=CountVectorizer(mi
         y_test = y_test[indices]
         test_corpus_shuffled = [test_corpus[i] for i in indices]
          
-    return X_train, y_train, X_test, y_test, train_corpus_shuffled, test_corpus_shuffled
+    return X_train, y_train, X_val, y_val, X_test, y_test, train_corpus_shuffled, val_corpus_shuffled, test_corpus_shuffled
 
 def ce_squared(T, probs):
     return ((T*probs)**2).sum()/len(probs)

@@ -44,28 +44,19 @@ t0 = time()
 
 vect = Vectorizer(min_df=5, max_df=1.0, binary=False, ngram_range=(1, 1))
 
-X_train, y_train, X_test, y_test, train_corpus, test_corpus = load_imdb("./aclImdb", shuffle=True, vectorizer=vect)
+X_train, y_train, X_val, y_val, X_test, y_test, train_corpus, val_corpus, test_corpus = load_imdb("./aclImdb", shuffle=True, vectorizer=vect)
 
 y_test_na = y_test[:, np.newaxis]
 y_test_na = np.append(y_test_na, 1-y_test_na, axis=1)
+
+y_val_na = y_val[:, np.newaxis]
+y_val_na = np.append(y_val_na, 1-y_val_na, axis=1)
 
 clf = Classifier()
 clf.fit(X_train, y_train)
 ctrl_clf = clf
 ctrl_error = ce_squared(y_test_na, clf.predict_proba(X_test))
 ctrl_acc = clf.score(X_test, y_test)
-
-# Split the train dataset in 2 for validation
-split = int(X_train.shape[0] / 2)
-
-X_val = csr_matrix(X_train[split:])
-y_val = np.copy(y_train[split:])
-
-X_train = csr_matrix(X_train[:split])
-y_train = np.copy(y_train[:split])
-
-y_val_na = y_val[:, np.newaxis]
-y_val_na = np.append(y_val_na, 1-y_val_na, axis=1)
 
 duration = time() - t0
 print("Loading the dataset took {:0.2f}s.".format(duration), '\n')
