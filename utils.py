@@ -76,12 +76,12 @@ def load_imdb(path, split_half=True, shuffle=True, random_state=42, vectorizer=C
         y_val = np.copy(y_train[split:])
         y_train = np.copy(y_train[:split])
     
-        val_corpus = train_corpus[split:]
-        train_corpus = train_corpus[:split]
+        val_corpus_shuffled = train_corpus_shuffled[split:]
+        train_corpus_shuffled = train_corpus_shuffled[:split]
 
-        X_train = vectorizer.fit_transform(train_corpus)
-        X_val = vectorizer.transform(val_corpus)
-        X_test = vectorizer.transform(test_corpus)
+        X_train = vectorizer.fit_transform(train_corpus_shuffled)
+        X_val = vectorizer.transform(val_corpus_shuffled)
+        X_test = vectorizer.transform(test_corpus_shuffled)
         
         X_train = X_train.tocsr()
         X_test = X_test.tocsr()
