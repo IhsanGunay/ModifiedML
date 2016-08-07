@@ -1,25 +1,24 @@
 from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer as Vectorizer
-from concurrent.futures import ProcessPoolExecutor
 from classifiers import TransparentMultinomialNB as Classifier
 from utils import ce_squared, load_imdb, ClassifierArchive
 from itertools import starmap, repeat, chain
 from time import time
 import numpy as np
 import pickle
+import sys
 
 # Functions
-def validate_modification(X_train, y_train, train_indices, X_val, y_val_na, N, best_error, executor):
-    tests = []
+def validate_modification(X_train, y_train, train_indices, validation_list, best_error):
     
-    for i in range(N):
-        X_try = X_val[i::N]
-        y_try_na = y_val_na[i::N] 
-        test = X_train, y_train, train_indices, X_try, y_try_na
+    tests = []
+    for val_set in validation_list:
+        test = X_train, y_train, train_indices, *val_set
         tests.append(test)
         
-    results = executor.map(test_modification, tests)
+    results = map(test_modification, tests)
     improvements = 0  
+    error_sum = 0
     
     for val_error in results:
         if val_error <= best_error:
@@ -54,6 +53,18 @@ y_test_na = np.append(y_test_na, 1-y_test_na, axis=1)
 y_val_na = y_val[:, np.newaxis]
 y_val_na = np.append(y_val_na, 1-y_val_na, axis=1)
 
+N = int(sys.argv[1])
+print('Number of validation sets is {}'.format(N))
+train_indices = np.arange(X_train.shape[0])
+val_indices = np.array_split(train_indices, N)
+
+validation_list = []
+for inds in val_indices:
+    y_valn = np.copy(y_val_na[inds])
+    X_valn = csr_matrix(X_val[inds])
+    val_set = X_valn, y_valn
+    validation_list.append(val_set)
+    
 clf = Classifier()
 clf.fit(X_train, y_train)
 ctrl_clf = clf
@@ -68,18 +79,88 @@ clf = Classifier()
 clf.fit(X_train, y_train)
 best_error = ce_squared(y_val_na, clf.predict_proba(X_val))
 y_modified = np.copy(y_train)
-train_indices = list(range(X_train.shape[0]))
-N = 2
+train_indices = list(train_indices)
 
-with ProcessPoolExecutor() as executor:
+for i in range(X_train.shape[0]):
+    if i in train_indices:
+        y_modified[i] = 1 - y_modified[i]
+        is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+
+        remove_train_indices = list(train_indices)
+        remove_train_indices.remove(i)
+        is_validated_1, try_error_1 =  validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+
+        if is_validated_0:           
+            if is_validated_1:
+                if try_error_0 < try_error_1:
+                    best_error = try_error_0
+                    print('Round: {}, error = {}'.format(i, best_error))
+
+                else:
+                    best_error = try_error_1
+                    train_indices = remove_train_indices
+                    print('Round: {}, error = {}'.format(i, best_error))
+
+            else:
+                best_error = try_error_0
+                print('Round: {}, error = {}'.format(i, best_error))
+
+        elif is_validated_1:
+            best_error = try_error_1
+            train_indices = remove_train_indices
+            print('Round: {}, error = {}'.format(i, best_error))
+
+        else:
+            y_modified[i] = 1 - y_modified[i]
+
+    else:
+        train_indices.append(i)
+        is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+
+        y_modified[i] = 1 - y_modified[i]
+        is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+
+        if is_validated_0:           
+            if is_validated_1:
+                if try_error_0 < try_error_1:
+                    best_error = try_error_0
+                    print('Round: {}, error = {}'.format(i, best_error))
+
+                else:
+                    best_error = try_error_1
+                    print('Round: {}, error = {}'.format(i, best_error))
+
+            else:
+                best_error = try_error_0
+                print('Round: {}, error = {}'.format(i, best_error))
+
+        elif is_validated_1:
+            best_error = try_error_1
+            train_indices = remove_train_indices
+            print('Round: {}, error = {}'.format(i, best_error))
+
+        else:
+            trin_indices.pop()
+    
+    best_clf = Classifier()
+    best_clf.fit(X_train[train_indices], y_modified[train_indices])
+test_acc = best_clf.score(X_test, y_test)
+print('Training Round: 0,\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(test_acc, ctrl_acc))
+
+clf_arch = ClassifierArchive(ctrl_clf, best_clf, train_indices, y_modified, vect)
+
+with open('clf9.arch', 'wb') as f:
+    pickle.dump(clf_arch, f)
+    
+for round_tag in range(2, 11):
     for i in range(X_train.shape[0]):
         if i in train_indices:
             y_modified[i] = 1 - y_modified[i]
-            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, X_val, y_val_na, N, best_error, executor)
+            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
 
             remove_train_indices = list(train_indices)
             remove_train_indices.remove(i)
-            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, remove_train_indices, X_val, y_val_na, N, best_error, executor)
+            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
 
             if is_validated_0:           
                 if is_validated_1:
@@ -106,10 +187,10 @@ with ProcessPoolExecutor() as executor:
 
         else:
             train_indices.append(i)
-            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, X_val, y_val_na, N, best_error, executor)
+            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
 
             y_modified[i] = 1 - y_modified[i]
-            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, X_val, y_val_na, N, best_error, executor)
+            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
 
             if is_validated_0:           
                 if is_validated_1:
@@ -134,89 +215,17 @@ with ProcessPoolExecutor() as executor:
                 trin_indices.pop()
         
         best_clf = Classifier()
-        best_clf.fit(X_train[best_train_indices], best_y_train[best_train_indices])
+        best_clf.fit(X_train[train_indices], y_modified[train_indices])
     test_acc = best_clf.score(X_test, y_test)
-    print('Training Round: 0,\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(test_acc, ctrl_acc))
+    print('Training Round: {},\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(i, round_tag, test_acc, ctrl_acc))
 
-    clf_arch = ClassifierArchive(ctrl_clf, best_clf, best_train_indices, best_y_train, vect)
+    with open('clf9.arch', 'rb') as f:
+        clf_arch = pickle.load(f)
+        
+    clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag)
 
     with open('clf9.arch', 'wb') as f:
         pickle.dump(clf_arch, f)
-        
-    for round_tag in range(2, 11):
-        for i in range(X_train.shape[0]):
-            if i in train_indices:
-                y_modified[i] = 1 - y_modified[i]
-                is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, X_val, y_val_na, N, best_error, executor)
-
-                remove_train_indices = list(train_indices)
-                remove_train_indices.remove(i)
-                is_validated_1, try_error_1 = validate_modification(X_train, y_modified, remove_train_indices, X_val, y_val_na, N, best_error, executor)
-
-                if is_validated_0:           
-                    if is_validated_1:
-                        if try_error_0 < try_error_1:
-                            best_error = try_error_0
-                            print('Round: {}, error = {}'.format(i, best_error))
-
-                        else:
-                            best_error = try_error_1
-                            train_indices = remove_train_indices
-                            print('Round: {}, error = {}'.format(i, best_error))
-
-                    else:
-                        best_error = try_error_0
-                        print('Round: {}, error = {}'.format(i, best_error))
-
-                elif is_validated_1:
-                    best_error = try_error_1
-                    train_indices = remove_train_indices
-                    print('Round: {}, error = {}'.format(i, best_error))
-
-                else:
-                    y_modified[i] = 1 - y_modified[i]
-
-            else:
-                train_indices.append(i)
-                is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, X_val, y_val_na, N, best_error, executor)
-
-                y_modified[i] = 1 - y_modified[i]
-                is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, X_val, y_val_na, N, best_error, executor)
-
-                if is_validated_0:           
-                    if is_validated_1:
-                        if try_error_0 < try_error_1:
-                            best_error = try_error_0
-                            print('Round: {}, error = {}'.format(i, best_error))
-
-                        else:
-                            best_error = try_error_1
-                            print('Round: {}, error = {}'.format(i, best_error))
-
-                    else:
-                        best_error = try_error_0
-                        print('Round: {}, error = {}'.format(i, best_error))
-
-                elif is_validated_1:
-                    best_error = try_error_1
-                    train_indices = remove_train_indices
-                    print('Round: {}, error = {}'.format(i, best_error))
-
-                else:
-                    trin_indices.pop()
-            
-            best_clf = Classifier()
-            best_clf.fit(X_train[best_train_indices], best_y_train[best_train_indices])
-        test_acc = best_clf.score(X_test, y_test)
-        print('Training Round: {},\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(i, round_tag, test_acc, ctrl_acc))
-
-        with open('clf9.arch', 'rb') as f:
-            clf_arch = pickle.load(f)
-            
-        clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag)
-
-        with open('clf9.arch', 'wb') as f:
-            pickle.dump(clf_arch, f)
         
 print('Experiment is done.')
 
