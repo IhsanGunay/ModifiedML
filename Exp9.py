@@ -1,5 +1,6 @@
 from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer as Vectorizer
+from sklearn.metrics import classification_report, confusion_matrix
 from classifiers import TransparentMultinomialNB as Classifier
 from utils import ce_squared, load_imdb, ClassifierArchive
 from itertools import starmap, repeat, chain
@@ -12,8 +13,8 @@ import sys
 def validate_modification(X_train, y_train, train_indices, validation_list, best_error):
     
     tests = []
-    for val_set in validation_list:
-        test = X_train, y_train, train_indices, *val_set
+    for X_val, y_val_na in validation_list:
+        test = X_train, y_train, train_indices, X_val, y_val_na
         tests.append(test)
         
     results = map(test_modification, tests)
@@ -23,11 +24,13 @@ def validate_modification(X_train, y_train, train_indices, validation_list, best
     for val_error in results:
         if val_error <= best_error:
             improvements += 1
-        error_sum += val_error
-        
+            error_sum += val_error
     if improvements > N/2:
-        return True, error_sum/N 
-    
+        avg_error = error_sum / improvements    
+        if avg_error < best_error:
+            return True, avg_error
+        else:
+            return True, best_error
     else:
         return False, best_error
     
@@ -94,21 +97,21 @@ for i in range(X_train.shape[0]):
             if is_validated_1:
                 if try_error_0 < try_error_1:
                     best_error = try_error_0
-                    print('Round: {}, error = {}'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
 
                 else:
                     best_error = try_error_1
                     train_indices = remove_train_indices
-                    print('Round: {}, error = {}'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
 
             else:
                 best_error = try_error_0
-                print('Round: {}, error = {}'.format(i, best_error))
+                print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
 
         elif is_validated_1:
             best_error = try_error_1
             train_indices = remove_train_indices
-            print('Round: {}, error = {}'.format(i, best_error))
+            print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
 
         else:
             y_modified[i] = 1 - y_modified[i]
@@ -124,23 +127,23 @@ for i in range(X_train.shape[0]):
             if is_validated_1:
                 if try_error_0 < try_error_1:
                     best_error = try_error_0
-                    print('Round: {}, error = {}'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
 
                 else:
                     best_error = try_error_1
-                    print('Round: {}, error = {}'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
 
             else:
                 best_error = try_error_0
-                print('Round: {}, error = {}'.format(i, best_error))
+                print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
 
         elif is_validated_1:
             best_error = try_error_1
             train_indices = remove_train_indices
-            print('Round: {}, error = {}'.format(i, best_error))
+            print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
 
         else:
-            trin_indices.pop()
+            train_indices.pop()
     
     best_clf = Classifier()
     best_clf.fit(X_train[train_indices], y_modified[train_indices])
@@ -166,21 +169,21 @@ for round_tag in range(2, 11):
                 if is_validated_1:
                     if try_error_0 < try_error_1:
                         best_error = try_error_0
-                        print('Round: {}, error = {}'.format(i, best_error))
+                        print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
 
                     else:
                         best_error = try_error_1
                         train_indices = remove_train_indices
-                        print('Round: {}, error = {}'.format(i, best_error))
+                        print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
 
                 else:
                     best_error = try_error_0
-                    print('Round: {}, error = {}'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
 
             elif is_validated_1:
                 best_error = try_error_1
                 train_indices = remove_train_indices
-                print('Round: {}, error = {}'.format(i, best_error))
+                print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
 
             else:
                 y_modified[i] = 1 - y_modified[i]
@@ -196,28 +199,28 @@ for round_tag in range(2, 11):
                 if is_validated_1:
                     if try_error_0 < try_error_1:
                         best_error = try_error_0
-                        print('Round: {}, error = {}'.format(i, best_error))
+                        print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
 
                     else:
                         best_error = try_error_1
-                        print('Round: {}, error = {}'.format(i, best_error))
+                        print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
 
                 else:
                     best_error = try_error_0
-                    print('Round: {}, error = {}'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
 
             elif is_validated_1:
                 best_error = try_error_1
                 train_indices = remove_train_indices
-                print('Round: {}, error = {}'.format(i, best_error))
+                print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
 
             else:
-                trin_indices.pop()
+                train_indices.pop()
         
         best_clf = Classifier()
         best_clf.fit(X_train[train_indices], y_modified[train_indices])
     test_acc = best_clf.score(X_test, y_test)
-    print('Training Round: {},\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(i, round_tag, test_acc, ctrl_acc))
+    print('Training Round: {},\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(round_tag, test_acc, ctrl_acc))
 
     with open('clf9.arch', 'rb') as f:
         clf_arch = pickle.load(f)
