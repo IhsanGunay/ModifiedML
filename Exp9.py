@@ -97,21 +97,21 @@ for i in range(X_train.shape[0]):
             if is_validated_1:
                 if try_error_0 < try_error_1:
                     best_error = try_error_0
-                    print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 021'.format(i, best_error))
 
                 else:
                     best_error = try_error_1
                     train_indices = remove_train_indices
-                    print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 012'.format(i, best_error))
 
             else:
                 best_error = try_error_0
-                print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
+                print('Round: {:5d}, error = {:0.4f}, code: 020'.format(i, best_error))
 
         elif is_validated_1:
             best_error = try_error_1
             train_indices = remove_train_indices
-            print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
+            print('Round: {:5d}, error = {:0.4f}, code: 002'.format(i, best_error))
 
         else:
             y_modified[i] = 1 - y_modified[i]
@@ -127,20 +127,21 @@ for i in range(X_train.shape[0]):
             if is_validated_1:
                 if try_error_0 < try_error_1:
                     best_error = try_error_0
-                    print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
+                    y_modified[i] = 1 - y_modified[i]
+                    print('Round: {:5d}, error = {:0.4f}, code: 121'.format(i, best_error))
 
                 else:
                     best_error = try_error_1
-                    print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
+                    print('Round: {:5d}, error = {:0.4f}, code: 112'.format(i, best_error))
 
             else:
                 best_error = try_error_0
-                print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
+                y_modified[i] = 1 - y_modified[i]
+                print('Round: {:5d}, error = {:0.4f}, code: 120'.format(i, best_error))
 
         elif is_validated_1:
             best_error = try_error_1
-            train_indices = remove_train_indices
-            print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
+            print('Round: {:5d}, error = {:0.4f}, code: 102'.format(i, best_error))
 
         else:
             train_indices.pop()
@@ -155,80 +156,81 @@ clf_arch = ClassifierArchive(ctrl_clf, best_clf, train_indices, y_modified, vect
 with open('clf9.arch', 'wb') as f:
     pickle.dump(clf_arch, f)
     
-for round_tag in range(2, 11):
-    for i in range(X_train.shape[0]):
-        if i in train_indices:
-            y_modified[i] = 1 - y_modified[i]
-            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
-
-            remove_train_indices = list(train_indices)
-            remove_train_indices.remove(i)
-            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
-
-            if is_validated_0:           
-                if is_validated_1:
-                    if try_error_0 < try_error_1:
-                        best_error = try_error_0
-                        print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
-
-                    else:
-                        best_error = try_error_1
-                        train_indices = remove_train_indices
-                        print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
-
-                else:
-                    best_error = try_error_0
-                    print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
-
-            elif is_validated_1:
-                best_error = try_error_1
-                train_indices = remove_train_indices
-                print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
-
-            else:
-                y_modified[i] = 1 - y_modified[i]
-
-        else:
-            train_indices.append(i)
-            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
-
-            y_modified[i] = 1 - y_modified[i]
-            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
-
-            if is_validated_0:           
-                if is_validated_1:
-                    if try_error_0 < try_error_1:
-                        best_error = try_error_0
-                        print('Round: {:5d}, error = {:0.4f}, code: 21'.format(i, best_error))
-
-                    else:
-                        best_error = try_error_1
-                        print('Round: {:5d}, error = {:0.4f}, code: 12'.format(i, best_error))
-
-                else:
-                    best_error = try_error_0
-                    print('Round: {:5d}, error = {:0.4f}, code: 20'.format(i, best_error))
-
-            elif is_validated_1:
-                best_error = try_error_1
-                train_indices = remove_train_indices
-                print('Round: {:5d}, error = {:0.4f}, code: 02'.format(i, best_error))
-
-            else:
-                train_indices.pop()
-        
-        best_clf = Classifier()
-        best_clf.fit(X_train[train_indices], y_modified[train_indices])
-    test_acc = best_clf.score(X_test, y_test)
-    print('Training Round: {},\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(round_tag, test_acc, ctrl_acc))
-
-    with open('clf9.arch', 'rb') as f:
-        clf_arch = pickle.load(f)
-        
-    clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag)
-
-    with open('clf9.arch', 'wb') as f:
-        pickle.dump(clf_arch, f)
+#for round_tag in range(2, 11):
+#    for i in range(X_train.shape[0]):
+#        if i in train_indices:
+#            y_modified[i] = 1 - y_modified[i]
+#            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#
+#            remove_train_indices = list(train_indices)
+#            remove_train_indices.remove(i)
+#            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#
+#            if is_validated_0:           
+#                if is_validated_1:
+#                    if try_error_0 < try_error_1:
+#                        best_error = try_error_0
+#                        print('Round: {:5d}, error = {:0.4f}, code: 021'.format(i, best_error))
+#
+#                    else:
+#                        best_error = try_error_1
+#                        train_indices = remove_train_indices
+#                        print('Round: {:5d}, error = {:0.4f}, code: 012'.format(i, best_error))
+#
+#                else:
+#                    best_error = try_error_0
+#                    print('Round: {:5d}, error = {:0.4f}, code: 020'.format(i, best_error))
+#
+#            elif is_validated_1:
+#                best_error = try_error_1
+#                train_indices = remove_train_indices
+#                print('Round: {:5d}, error = {:0.4f}, code: 002'.format(i, best_error))
+#
+#            else:
+#                y_modified[i] = 1 - y_modified[i]
+#
+#        else:
+#            train_indices.append(i)
+#            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#
+#            y_modified[i] = 1 - y_modified[i]
+#            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#
+#            if is_validated_0:           
+#                if is_validated_1:
+#                    if try_error_0 < try_error_1:
+#                        best_error = try_error_0
+#                        y_modified[i] = 1 - y_modified[i]
+#                        print('Round: {:5d}, error = {:0.4f}, code: 121'.format(i, best_error))
+#
+#                    else:
+#                        best_error = try_error_1
+#                        print('Round: {:5d}, error = {:0.4f}, code: 112'.format(i, best_error))
+#
+#                else:
+#                    best_error = try_error_0
+#                    y_modified[i] = 1 - y_modified[i]
+#                    print('Round: {:5d}, error = {:0.4f}, code: 120'.format(i, best_error))
+#
+#            elif is_validated_1:
+#                best_error = try_error_1
+#                print('Round: {:5d}, error = {:0.4f}, code: 102'.format(i, best_error))
+#
+#            else:
+#                train_indices.pop()
+#        
+#        best_clf = Classifier()
+#        best_clf.fit(X_train[train_indices], y_modified[train_indices])
+#    test_acc = best_clf.score(X_test, y_test)
+#    print('Training Round: {},\tTest accuracy is {:0.3f},\tCotrol accuracy is {:0.3f}'.format(round_tag, test_acc, ctrl_acc))
+#
+#    with open('clf9.arch', 'rb') as f:
+#        clf_arch = pickle.load(f)
+#        
+#    clf_arch.add_classifier(best_clf, train_indices, y_modified, round_tag)
+#
+#    with open('clf9.arch', 'wb') as f:
+#        pickle.dump(clf_arch, f)
         
 print('Experiment is done.')
 
