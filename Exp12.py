@@ -1,5 +1,6 @@
 from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer as Vectorizer
+from sklearn.metrics import classification_report
 from concurrent.futures import ProcessPoolExecutor
 from classifiers import TransparentLogisticRegression as Classifier
 from utils import ce_squared, load_imdb, ClassifierArchive
@@ -143,6 +144,11 @@ print('0 to 1 :', len(list(filter(lambda x: x>0, changes))))
 test_acc = ctrl_clf.score(X_test, y_test)
 print('Control test accuracy is {}'.format(test_acc), '\n')
 
+best_pred = best_clf.predict(X_test)
+ctrl_pred = ctrl_clf.predict(X_test)
+print(classification_report(y_test, ctrl_pred))
+print(classification_report(y_test, best_pred))
+
 clf = Classifier()
 clf.fit(X_train, y_train)
 
@@ -172,3 +178,41 @@ print('First test error is {}'.format(test_acc), '\n')
 
 val_acc = ce_squared(y_val_na, best_clf.predict_proba(X_val))
 print('Best validation error is {}'.format(val_acc), '\n')
+
+best_weights = best_clf.get_weights()
+ctrl_weights = ctrl_clf.get_weights()
+
+best_ws = np.argsort(best_weights)
+ctrl_ws = np.argsort(ctrl_weights)
+
+print("Top Positive")
+print(" ".join(["{} ({})".format(feature_names[i], ctrl_clf.feature_count_[:,i])
+                for i in ctrl_ws[-10:][::-1]]))
+
+print("\nTop Negative")
+print(" ".join(["{} ({})".format(feature_names[i], ctrl_clf.feature_count_[:,i])
+                for i in ctrl_ws[:10]]))
+
+print("Top Positive")
+print(" ".join(["{} ({})".format(feature_names[i], best_clf.feature_count_[:,i])
+                for i in best_ws[-10:][::-1]]))
+
+print("\nTop Negative")
+print(" ".join(["{} ({})".format(feature_names[i], best_clf.feature_count_[:,i])
+                for i in best_ws[:10]]))
+
+print('Train indices:')
+for i in range(len(clf_arch)):
+    print(i+1, len(clf_arch.train_indices[i]))
+
+print('Modifications:')
+for i in range(len(clf_arch)):
+    print(np.sum(clf_arch.modified_labels[i][clf_arch.train_indices[i]]))
+
+print('Errors:')
+for i in range(len(clf_arch)):
+    print(ce_squared(y_val_na, clf_arch.classifiers[i].predict_proba(X_val)))
+
+print('Accuracies:')
+for i in range(len(clf_arch)):
+    print(clf_arch.classifiers[i].score(X_test, y_test))
