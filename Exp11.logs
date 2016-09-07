@@ -1,0 +1,166 @@
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.833407163619995s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.43s.
+
+i = 10	new_error = 0.25142 added
+i = 11	new_error = 0.24823 flipped
+i = 73	new_error = 0.24819 added
+i = 74	new_error = 0.24596 added
+i = 8514	new_error = 0.24586 added
+i = 8515	new_error = 0.24408 flipped
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 9.2818763256073s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.86s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.932828903198242s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.55s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.896265745162964s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.54s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.992009401321411s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.56s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 9.396039724349976s
+n_samples: 12500, n_features: 19271 
+
+Loading took 11.01s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.857513904571533s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.48s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.747074365615845s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.32s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.76935076713562s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.36s.
+
+0.63556
+Loading the imdb reviews data
+Data loaded.
+Extracting features from the training dataset using a sparse vectorizer
+Feature extraction technique is TfidfVectorizer(analyzer='word', binary=False, decode_error='strict',
+        dtype=<class 'numpy.int64'>, encoding='utf-8', input='content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=5,
+        ngram_range=(1, 1), norm='l2', preprocessor=None, smooth_idf=True,
+        stop_words=None, strip_accents=None, sublinear_tf=False,
+        token_pattern='(?u)\\b\\w\\w+\\b', tokenizer=None, use_idf=True,
+        vocabulary=None).
+done in 8.748017311096191s
+n_samples: 12500, n_features: 19271 
+
+Loading took 10.29s.
+
+0.63556

@@ -10,7 +10,7 @@ import pickle
 import sys
 
 # Functions
-def validate_modification(X_train, y_train, train_indices, validation_list, best_error):
+def validate_modification(X_train, y_train, train_indices, validation_list, best_error, N):
     
     tests = []
     for X_val, y_val_na in validation_list:
@@ -87,11 +87,11 @@ train_indices = list(train_indices)
 for i in range(X_train.shape[0]):
     if i in train_indices:
         y_modified[i] = 1 - y_modified[i]
-        is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+        is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 
         remove_train_indices = list(train_indices)
         remove_train_indices.remove(i)
-        is_validated_1, try_error_1 =  validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+        is_validated_1, try_error_1 =  validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 
         if is_validated_0:           
             if is_validated_1:
@@ -118,10 +118,10 @@ for i in range(X_train.shape[0]):
 
     else:
         train_indices.append(i)
-        is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+        is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 
         y_modified[i] = 1 - y_modified[i]
-        is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+        is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 
         if is_validated_0:           
             if is_validated_1:
@@ -160,11 +160,11 @@ with open('clf9.arch', 'wb') as f:
 #    for i in range(X_train.shape[0]):
 #        if i in train_indices:
 #            y_modified[i] = 1 - y_modified[i]
-#            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 #
 #            remove_train_indices = list(train_indices)
 #            remove_train_indices.remove(i)
-#            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 #
 #            if is_validated_0:           
 #                if is_validated_1:
@@ -191,10 +191,10 @@ with open('clf9.arch', 'wb') as f:
 #
 #        else:
 #            train_indices.append(i)
-#            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#            is_validated_0, try_error_0 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 #
 #            y_modified[i] = 1 - y_modified[i]
-#            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error)
+#            is_validated_1, try_error_1 = validate_modification(X_train, y_modified, train_indices, validation_list, best_error, N)
 #
 #            if is_validated_0:           
 #                if is_validated_1:
